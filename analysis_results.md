@@ -1,8 +1,8 @@
-# 🛰️ Análisis del Software — ShadowBroker v0.9.75
+# 🛰️ Análisis del Software —SistemaHidrico
 
 ## Resumen Ejecutivo
 
-**ShadowBroker** es una plataforma de inteligencia geoespacial en tiempo real de código abierto (AGPL-3.0) que agrega **60+ fuentes de datos OSINT** (Open Source Intelligence) en una única interfaz de mapa interactivo. Está diseñada para analistas, investigadores, operadores de radio y cualquier persona interesada en visualizar señales públicas globales en un solo lugar.
+**SistemaHidrico** es una plataforma de inteligencia geoespacial en tiempo real de código abierto (AGPL-3.0) que agrega **60+ fuentes de datos OSINT** (Open Source Intelligence) en una única interfaz de mapa interactivo. Está diseñada para analistas, investigadores, operadores de radio y cualquier persona interesada en visualizar señales públicas globales en un solo lugar.
 
 > [!IMPORTANT]
 > Este no es un software de vigilancia nuevo — agrega y visualiza datasets públicos existentes (ADS-B, AIS, TLE, GDELT, etc.). No recolecta datos de usuario.
@@ -127,7 +127,7 @@ graph TB
 ## 📁 Estructura del Proyecto
 
 ```
-Shadowbroker-main/
+SistemaHidrico/
 ├── backend/                    # Servidor API Python
 │   ├── main.py                 # Punto de entrada (~11,547 líneas!)
 │   ├── auth.py                 # Autenticación y autorización (~61K)
@@ -188,7 +188,7 @@ Shadowbroker-main/
 │   └── tauri-skeleton/         # Configuración Tauri
 │
 ├── openclaw-skills/            # SDK para agentes AI
-│   └── shadowbroker/
+│   └── SistemaHidrico/
 │       ├── sb_query.py         # Queries de datos (~51K)
 │       ├── sb_monitor.py       # Monitoreo (~29K)
 │       ├── sb_briefing.py      # Informes de inteligencia
@@ -395,7 +395,7 @@ sequenceDiagram
 
 ### Docker (Recomendado)
 ```bash
-cd Shadowbroker-main
+cd SistemaHidrico
 docker compose pull
 docker compose up -d
 # Abrir http://localhost:3000
@@ -423,7 +423,7 @@ npm run dev  # Inicia ambos servidores
 
 ## 🎯 Conclusión
 
-ShadowBroker es un proyecto **ambicioso y maduro** que integra una cantidad impresionante de fuentes de datos OSINT en una interfaz unificada. Los puntos clave:
+SistemaHidrico es un proyecto **ambicioso y maduro** que integra una cantidad impresionante de fuentes de datos OSINT en una interfaz unificada. Los puntos clave:
 
 1. **Escala**: ~274K líneas de código, 60+ fuentes de datos, 37 capas interactivas
 2. **Complejidad**: La capa mesh descentralizada (InfoNet) con gobernanza, criptografía y protocolos de privacidad es particularmente sofisticada

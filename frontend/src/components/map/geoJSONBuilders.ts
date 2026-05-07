@@ -1775,3 +1775,97 @@ export function buildSarAoisGeoJSON(aois?: SarAoi[]): FC {
   if (features.length === 0) return null;
   return { type: 'FeatureCollection' as const, features };
 }
+
+// ─── Sistema Hídrico Turimiquire ────────────────────────────────────────────
+
+const HIDRICO_COLORS: Record<string, string> = {
+  critico: '#ef4444',      // red
+  advertencia: '#f59e0b',  // amber
+  normal: '#22c55e',       // green
+  sin_datos: '#6b7280',    // gray
+};
+
+const COMPONENTE_ICONS: Record<string, string> = {
+  embalse: 'hidrico-embalse',
+  tunel: 'hidrico-tunel',
+  planta: 'hidrico-planta',
+  estacion_bombeo: 'hidrico-bomba',
+  red_distribucion: 'hidrico-red',
+  rio: 'hidrico-rio',
+  tanque: 'hidrico-tanque',
+  sensor: 'hidrico-sensor',
+};
+
+interface TurimiquireSensor {
+  sensor_id: string;
+  componente: string;
+  tipo_medicion: string;
+  valor: number;
+  unidad: string;
+  lat?: number;
+  lng?: number;
+  timestamp?: number;
+  alertas?: Array<{ tipo: string; mensaje: string }>;
+  // Legacy fields from the original model
+  nivel_agua_metros?: number;
+  presion_psi?: number;
+  caudal_lps?: number;
+}
+
+export function buildTurimiquireGeoJSON(sensors?: TurimiquireSensor[]): FC {
+  if (!sensors?.length) return null;
+  return {
+    type: 'FeatureCollection' as const,
+    features: sensors
+      .filter((s) => {
+        // Support both new and legacy formats
+        const lat = s.lat ?? 10.133;
+        const lng = s.lng ?? -63.933;
+        return Number.isFinite(lat) && Number.isFinite(lng);
+      })
+      .map((s, i) => {
+        const hasAlert = s.alertas && s.alertas.length > 0;
+        const alertType = s.alertas?.[0]?.tipo || '';
+        const color = alertType === 'critico'
+          ? HIDRICO_COLORS.critico
+          : alertType === 'advertencia'
+            ? HIDRICO_COLORS.advertencia
+            : HIDRICO_COLORS.normal;
+
+        // Build display label
+        const comp = (s.componente || 'sensor').toUpperCase();
+        const medicion = s.tipo_medicion || '';
+        const valor = s.valor != null
+          ? `${s.valor.toFixed(1)} ${s.unidad || ''}`
+          : s.nivel_agua_metros != null
+            ? `${s.nivel_agua_metros.toFixed(1)} m`
+            : '';
+
+        return {
+          type: 'Feature' as const,
+          properties: {
+            id: s.sensor_id || `turimiquire-${i}`,
+            type: 'turimiquire_sensor',
+            name: `${comp} — ${medicion || s.sensor_id}`,
+            sensor_id: s.sensor_id,
+            componente: s.componente || 'sensor',
+            tipo_medicion: medicion,
+            valor: s.valor ?? s.nivel_agua_metros ?? 0,
+            unidad: s.unidad || '',
+            valor_display: valor,
+            color,
+            iconId: COMPONENTE_ICONS[s.componente] || 'hidrico-sensor',
+            has_alert: hasAlert,
+            alert_type: alertType,
+            alert_msg: s.alertas?.[0]?.mensaje || '',
+            timestamp: s.timestamp || 0,
+          },
+          geometry: {
+            type: 'Point' as const,
+            coordinates: [s.lng ?? -63.933, s.lat ?? 10.133],
+          },
+        };
+      }),
+  };
+}
+

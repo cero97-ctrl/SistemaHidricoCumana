@@ -104,6 +104,7 @@ const FRESHNESS_MAP: Record<string, string> = {
   wastewater: 'wastewater',
   ai_intel: '',
   crowdthreat: 'crowdthreat',
+  turimiquire: 'turimiquire',
 };
 
 // POTUS fleet ICAO hex codes for client-side filtering
@@ -1103,6 +1104,19 @@ const WorldviewLeftPanel = React.memo(function WorldviewLeftPanel({
           name: 'Wastewater Pathogens',
           source: 'WastewaterSCAN',
           count: data?.wastewater?.length || 0,
+          icon: Droplets,
+        },
+      ],
+    },
+    {
+      label: 'SISTEMA HÍDRICO',
+      icon: Droplets,
+      layers: [
+        {
+          id: 'turimiquire',
+          name: 'Sistema Hídrico Cumaná',
+          source: 'Sensores IoT / Simulado',
+          count: (data as any)?.turimiquire?.length || 0,
           icon: Droplets,
         },
       ],

@@ -1,4 +1,4 @@
-﻿import os
+import os
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -357,6 +357,7 @@ wormhole_router = _load_optional_router("routers.wormhole")
 ai_intel_router = _load_optional_router("routers.ai_intel")
 sar_router = _load_optional_router("routers.sar")
 infonet_router = _load_optional_router("routers.infonet")
+hidrico_router = _load_optional_router("routers.hidrico")
 
 
 # ---------------------------------------------------------------------------
@@ -3260,6 +3261,7 @@ app.include_router(wormhole_router)
 app.include_router(ai_intel_router)
 app.include_router(sar_router)
 app.include_router(infonet_router)
+app.include_router(hidrico_router)
 
 from services.data_fetcher import update_all_data
 

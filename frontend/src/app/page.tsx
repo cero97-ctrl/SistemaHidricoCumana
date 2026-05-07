@@ -22,6 +22,7 @@ import { leaveWormhole, fetchWormholeState } from '@/mesh/wormholeClient';
 import { teardownWormholeOnClose } from '@/lib/wormholeTeardown';
 import ShodanPanel from '@/components/ShodanPanel';
 import AIIntelPanel from '@/components/AIIntelPanel';
+import HidricoPanel from '@/components/HidricoPanel';
 import GlobalTicker from '@/components/GlobalTicker';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import OnboardingModal, { useOnboarding } from '@/components/OnboardingModal';
@@ -151,7 +152,7 @@ export default function Dashboard() {
     setInfonetOpen(prev => !prev);
   }, []);
 
-  const [activeLayers, setActiveLayers] = useState<ActiveLayers>({
+  const [activeLayers, setActiveLayers] = useState<ActiveLayers | any>({
     // Aircraft — all ON
     flights: true,
     private: true,
@@ -211,6 +212,8 @@ export default function Dashboard() {
     ai_intel: true,
     // SAR (Synthetic Aperture Radar)
     sar: true,
+    // Sistema Hídrico Turimiquire
+    turimiquire: true,
   });
   const [shodanResults, setShodanResults] = useState<ShodanSearchMatch[]>([]);
   const [, setShodanQueryLabel] = useState('');
@@ -229,12 +232,12 @@ export default function Dashboard() {
   ] as const);
   const criticalPaintReady = Boolean(
     bootSignals.bootstrap_ready ||
-      (bootSignals.commercial_flights?.length || 0) > 0 ||
-      (bootSignals.military_flights?.length || 0) > 0 ||
-      (bootSignals.tracked_flights?.length || 0) > 0 ||
-      (bootSignals.ships?.length || 0) > 0 ||
-      (bootSignals.news?.length || 0) > 0 ||
-      bootSignals.threat_level,
+    (bootSignals.commercial_flights?.length || 0) > 0 ||
+    (bootSignals.military_flights?.length || 0) > 0 ||
+    (bootSignals.tracked_flights?.length || 0) > 0 ||
+    (bootSignals.ships?.length || 0) > 0 ||
+    (bootSignals.news?.length || 0) > 0 ||
+    bootSignals.threat_level,
   );
   const [secondaryBootReady, setSecondaryBootReady] = useState(false);
 
@@ -308,6 +311,7 @@ export default function Dashboard() {
   const [leftDataMinimized, setLeftDataMinimized] = useState(false);
   const [leftMeshExpanded, setLeftMeshExpanded] = useState(true);
   const [leftShodanMinimized, setLeftShodanMinimized] = useState(true);
+  const [leftHidricoMinimized, setLeftHidricoMinimized] = useState(false);
 
   const launchMeshChatTab = useCallback(
     (
@@ -586,7 +590,20 @@ export default function Dashboard() {
                 )}
               </div>
 
-              {/* 2. MESH CHAT (Middle) */}
+              {/* 2. SISTEMA HÍDRICO PANEL */}
+              {secondaryBootReady && (
+                <div className="contents" style={{ direction: 'ltr' }}>
+                  <ErrorBoundary name="HidricoPanel">
+                    <HidricoPanel
+                      onFlyTo={handleFlyTo}
+                      isMinimized={leftHidricoMinimized}
+                      onMinimizedChange={setLeftHidricoMinimized}
+                    />
+                  </ErrorBoundary>
+                </div>
+              )}
+
+              {/* 3. MESH CHAT (Middle) */}
               {secondaryBootReady && (
                 <div className="contents" style={{ direction: 'ltr' }}>
                   <MeshChat
@@ -688,11 +705,11 @@ export default function Dashboard() {
 
               {/* FIND / LOCATE */}
               <div className="flex-shrink-0">
-              <FindLocateBar
-                onLocate={(lat, lng, _entityId, _entityType) => {
-                  setFlyToLocation({ lat, lng, ts: Date.now() });
-                }}
-                onFilter={(filterKey, value) => {
+                <FindLocateBar
+                  onLocate={(lat, lng, _entityId, _entityType) => {
+                    setFlyToLocation({ lat, lng, ts: Date.now() });
+                  }}
+                  onFilter={(filterKey, value) => {
                     setActiveFilters((prev) => {
                       const current = prev[filterKey] || [];
                       if (!current.includes(value)) {
@@ -818,13 +835,12 @@ export default function Dashboard() {
                           SOLAR
                         </div>
                         <div
-                          className={`text-[14px] font-mono font-bold ${
-                            (sw?.kp_index ?? 0) >= 5
+                          className={`text-[14px] font-mono font-bold ${(sw?.kp_index ?? 0) >= 5
                               ? 'text-red-400'
                               : (sw?.kp_index ?? 0) >= 4
                                 ? 'text-yellow-400'
                                 : 'text-green-400'
-                          }`}
+                            }`}
                         >
                           {sw?.kp_text || 'N/A'}
                         </div>
@@ -863,19 +879,19 @@ export default function Dashboard() {
 
         {/* DYNAMIC SCALE BAR — hidden when fullscreen overlays or locate bar are open */}
         {!(selectedEntity?.type === 'region_dossier' && regionDossier?.sentinel2) && selectedEntity?.type !== 'cctv' && selectedEntity?.type !== 'news' && !locateBarOpen && (
-        <div className="absolute bottom-[7rem] left-[23rem] z-[201] pointer-events-auto">
-          <ScaleBar
-            zoom={mapView.zoom}
-            latitude={mapView.latitude}
-            measureMode={measureMode}
-            measurePoints={measurePoints}
-            onToggleMeasure={() => {
-              setMeasureMode((m) => !m);
-              if (measureMode) setMeasurePoints([]);
-            }}
-            onClearMeasure={() => setMeasurePoints([])}
-          />
-        </div>
+          <div className="absolute bottom-[7rem] left-[23rem] z-[201] pointer-events-auto">
+            <ScaleBar
+              zoom={mapView.zoom}
+              latitude={mapView.latitude}
+              measureMode={measureMode}
+              measurePoints={measurePoints}
+              onToggleMeasure={() => {
+                setMeasureMode((m) => !m);
+                if (measureMode) setMeasurePoints([]);
+              }}
+              onClearMeasure={() => setMeasurePoints([])}
+            />
+          </div>
         )}
 
         {/* STATIC CRT VIGNETTE */}
@@ -991,9 +1007,9 @@ export default function Dashboard() {
         )}
         {/* BOTTOM TICKER TOGGLE TAB — moved to center-right to avoid panel overlap */}
         <motion.div
-           className={`absolute bottom-0 right-[28rem] z-[8001] pointer-events-auto hud-zone transition-opacity duration-300 ${tickerOpen ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}
-           animate={{ y: tickerOpen ? -28 : 0 }}
-           transition={{ type: 'spring', damping: 30, stiffness: 250 }}
+          className={`absolute bottom-0 right-[28rem] z-[8001] pointer-events-auto hud-zone transition-opacity duration-300 ${tickerOpen ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}
+          animate={{ y: tickerOpen ? -28 : 0 }}
+          transition={{ type: 'spring', damping: 30, stiffness: 250 }}
         >
           <button
             onClick={() => setTickerOpen(!tickerOpen)}

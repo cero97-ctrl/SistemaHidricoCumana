@@ -203,6 +203,7 @@ import {
   buildWeatherAlertLabelsGeoJSON,
   buildSarAnomaliesGeoJSON,
   buildSarAoisGeoJSON,
+  buildTurimiquireGeoJSON,
   type FlightLayerConfig,
 } from '@/components/map/geoJSONBuilders';
 
@@ -1404,6 +1405,32 @@ const MaplibreViewer = ({
     [activeLayers.sar, sarAoisList],
   );
 
+  // Sistema Hídrico — sensor data points
+  const turimiquireGeoJSON = useMemo(
+    () => (activeLayers.turimiquire ? buildTurimiquireGeoJSON((data as any)?.turimiquire) : null),
+    [activeLayers.turimiquire, (data as any)?.turimiquire],
+  );
+
+  // Load infrastructure GeoJSON once when the layer is enabled
+  const [infraGeoJSON, setInfraGeoJSON] = useState<GeoJSON.FeatureCollection | null>(null);
+  useEffect(() => {
+    if (!activeLayers.turimiquire) return;
+    if (infraGeoJSON) return; // already loaded
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/hidrico/infraestructura`);
+        if (res.ok && !cancelled) {
+          setInfraGeoJSON(await res.json());
+        }
+      } catch {
+        // infrastructure is optional — sensors still work without it
+      }
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [activeLayers.turimiquire]);
+
   const getSelectedEntityLiveCoords = useCallback(
     (entity: ReturnType<typeof findSelectedEntity>): [number, number] | null => {
       if (!entity || entity.lat == null || entity.lng == null) return null;
@@ -1658,6 +1685,7 @@ const MaplibreViewer = ({
     sarAoisGeoJSON && 'sar-aois-fill',
     aiIntelGeoJSON && 'ai-intel-clusters',
     aiIntelGeoJSON && 'ai-intel-pin-layer',
+    turimiquireGeoJSON && 'turimiquire-layer',
     correlationsGeoJSON && 'corr-rf-fill',
     correlationsGeoJSON && 'corr-mil-fill',
     correlationsGeoJSON && 'corr-infra-fill',
@@ -1732,6 +1760,8 @@ const MaplibreViewer = ({
   useImperativeSource(mapForHook, 'trains', trainsGeoJSON, 60);
   useImperativeSource(mapForHook, 'sar-aois', sarAoisGeoJSON, 120);
   useImperativeSource(mapForHook, 'sar-anomalies', sarAnomaliesGeoJSON, 120);
+  useImperativeSource(mapForHook, 'turimiquire-source', turimiquireGeoJSON, 60);
+  useImperativeSource(mapForHook, 'hidrico-infra-source', activeLayers.turimiquire ? infraGeoJSON : null, 300);
 
   const handleMouseMove = useCallback(
     (evt: MapLayerMouseEvent) => {
@@ -3069,7 +3099,144 @@ const MaplibreViewer = ({
           </Source>
         )}
 
-        {/* Shodan — operator-triggered local overlay, clustered and clearly distinct */}
+        {/* ── SISTEMA HÍDRICO — Static Infrastructure ── */}
+        {activeLayers.turimiquire && infraGeoJSON && (
+          <Source id="hidrico-infra-source" type="geojson" data={infraGeoJSON}>
+            {/* Reservoir and distribution zone fills */}
+            <Layer
+              id="hidrico-fills"
+              type="fill"
+              filter={['in', ['get', 'componente'], ['literal', ['embalse', 'red_distribucion']]]}
+              paint={{
+                'fill-color': ['get', 'fill_color'],
+                'fill-opacity': ['coalesce', ['get', 'fill_opacity'], 0.15],
+              }}
+            />
+            {/* Reservoir and zone outlines */}
+            <Layer
+              id="hidrico-fill-outlines"
+              type="line"
+              filter={['in', ['get', 'componente'], ['literal', ['embalse', 'red_distribucion']]]}
+              paint={{
+                'line-color': ['get', 'color'],
+                'line-width': 1.5,
+                'line-opacity': 0.6,
+              }}
+            />
+            {/* Pipelines, tunnel, and river lines */}
+            <Layer
+              id="hidrico-lines"
+              type="line"
+              filter={['in', ['get', 'componente'], ['literal', ['tunel', 'tuberia', 'rio']]]}
+              paint={{
+                'line-color': ['get', 'color'],
+                'line-width': ['case',
+                  ['==', ['get', 'componente'], 'rio'], 3,
+                  ['==', ['get', 'componente'], 'tunel'], 3,
+                  2,
+                ],
+                'line-opacity': 0.7,
+                'line-dasharray': ['case',
+                  ['==', ['get', 'componente'], 'rio'], ['literal', [1]],
+                  ['literal', [8, 4]],
+                ],
+              }}
+            />
+            {/* Infrastructure points (plants, pumps, tanks, sensors) */}
+            <Layer
+              id="hidrico-infra-points-halo"
+              type="circle"
+              filter={['==', ['geometry-type'], 'Point']}
+              paint={{
+                'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 4, 10, 8, 14, 12],
+                'circle-color': ['get', 'color'],
+                'circle-opacity': 0.2,
+                'circle-blur': 0.6,
+              }}
+            />
+            <Layer
+              id="hidrico-infra-points"
+              type="circle"
+              filter={['==', ['geometry-type'], 'Point']}
+              paint={{
+                'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 3, 10, 5, 14, 7],
+                'circle-color': ['get', 'color'],
+                'circle-opacity': 0.9,
+                'circle-stroke-width': 1.5,
+                'circle-stroke-color': '#000',
+              }}
+            />
+            {/* Infrastructure labels */}
+            <Layer
+              id="hidrico-infra-labels"
+              type="symbol"
+              filter={['==', ['geometry-type'], 'Point']}
+              minzoom={9}
+              layout={{
+                'text-field': ['get', 'nombre'],
+                'text-font': ['Noto Sans Regular'],
+                'text-size': ['interpolate', ['linear'], ['zoom'], 9, 8, 14, 11],
+                'text-offset': [0, 1.4],
+                'text-anchor': 'top',
+                'text-allow-overlap': false,
+                'text-max-width': 14,
+              }}
+              paint={{
+                'text-color': '#a5f3fc',
+                'text-halo-color': 'rgba(0,0,0,0.9)',
+                'text-halo-width': 1.2,
+              }}
+            />
+          </Source>
+        )}
+
+        {/* ── SISTEMA HÍDRICO — Dynamic Sensor Points ── */}
+        <Source id="turimiquire-source" type="geojson" data={EMPTY_FC}>
+          {/* Sensor glow halo */}
+          <Layer
+            id="turimiquire-halo"
+            type="circle"
+            paint={{
+              'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 6, 10, 12, 14, 18],
+              'circle-color': ['get', 'color'],
+              'circle-opacity': 0.15,
+              'circle-blur': 0.7,
+            }}
+          />
+          {/* Sensor core dot */}
+          <Layer
+            id="turimiquire-layer"
+            type="circle"
+            paint={{
+              'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 4, 10, 6, 14, 9],
+              'circle-color': ['get', 'color'],
+              'circle-opacity': 0.95,
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#0a0a0a',
+            }}
+          />
+          {/* Sensor value label */}
+          <Layer
+            id="turimiquire-label"
+            type="symbol"
+            minzoom={8}
+            layout={{
+              'text-field': ['concat', ['get', 'valor_display'], '\n', ['get', 'name']],
+              'text-font': ['Noto Sans Bold'],
+              'text-size': ['interpolate', ['linear'], ['zoom'], 8, 8, 14, 11],
+              'text-offset': [0, 1.6],
+              'text-anchor': 'top',
+              'text-allow-overlap': false,
+              'text-max-width': 12,
+            }}
+            paint={{
+              'text-color': ['get', 'color'],
+              'text-halo-color': 'rgba(0,0,0,0.9)',
+              'text-halo-width': 1.2,
+            }}
+          />
+        </Source>
+
         {(() => {
           const sc = shodanStyle ?? { shape: 'circle' as const, color: '#16a34a', size: 'md' as const };
           const sizeMap = { sm: [3, 4, 5] as const, md: [4, 6, 8] as const, lg: [6, 9, 12] as const };

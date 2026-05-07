@@ -30,6 +30,13 @@ class LayerUpdate(BaseModel):
     layers: dict[str, bool]
 
 
+class TurimiquireTelemetry(BaseModel):
+    sensor_id: str
+    nivel_agua_metros: float
+    presion_psi: float
+    caudal_lps: float
+
+
 _LAST_VIEWPORT_UPDATE: tuple | None = None
 _LAST_VIEWPORT_UPDATE_TS = 0.0
 _VIEWPORT_UPDATE_LOCK = threading.Lock()
@@ -363,6 +370,44 @@ async def update_layers(update: LayerUpdate, request: Request):
     return {"status": "ok"}
 
 
+@router.post("/api/turimiquire/telemetry", dependencies=[Depends(require_local_operator)])
+@limiter.limit("60/minute")
+async def turimiquire_telemetry(request: Request, payload: TurimiquireTelemetry):
+    """Recibe telemetría de los sensores de la Represa del Turimiquire."""
+    from services.fetchers._store import latest_data, _data_lock, bump_data_version
+    import time
+
+    alertas = []
+    if payload.nivel_agua_metros < 250.0: # Nivel crítico hipotético
+        alertas.append("Nivel de agua bajo")
+    if payload.presion_psi < 40.0:
+        alertas.append("Caída de presión detectada")
+
+    data_point = payload.model_dump()
+    data_point["timestamp"] = time.time()
+    data_point["alertas"] = alertas
+    # Coordenadas aproximadas de la represa para que aparezca en el mapa
+    data_point["lat"] = 10.1333
+    data_point["lng"] = -63.9333
+    data_point["id"] = payload.sensor_id
+    data_point["type"] = "turimiquire_sensor"
+
+    with _data_lock:
+        if "turimiquire" not in latest_data:
+            latest_data["turimiquire"] = []
+        # Almacenar histórico corto de hasta 100 mediciones
+        latest_data["turimiquire"].append(data_point)
+        if len(latest_data["turimiquire"]) > 100:
+            latest_data["turimiquire"].pop(0)
+        bump_data_version()
+
+    return {
+        "status": "éxito",
+        "mensaje": "Datos registrados",
+        "alertas_activas": alertas
+    }
+
+
 @router.get("/api/live-data")
 @limiter.limit("120/minute")
 async def live_data(request: Request):
@@ -541,7 +586,8 @@ async def live_data_slow(
         "firms_fires", "datacenters", "military_bases", "power_plants", "viirs_change_nodes",
         "scanners", "weather_alerts", "ukraine_alerts", "air_quality", "volcanoes",
         "fishing_activity", "psk_reporter", "correlations", "uap_sightings", "wastewater",
-        "crowdthreat", "threat_level", "trending_markets",
+        "crowdthreat", "threat_level", "trending_markets", "turimiquire",
+        "hidrico_estado", "hidrico_alertas",
     )
     freshness = get_source_timestamps_snapshot()
     payload = {
@@ -583,6 +629,9 @@ async def live_data_slow(
         "wastewater": (d.get("wastewater") or []) if active_layers.get("wastewater", True) else [],
         "crowdthreat": (d.get("crowdthreat") or []) if active_layers.get("crowdthreat", True) else [],
         "freshness": freshness,
+        "turimiquire": d.get("turimiquire") or [],
+        "hidrico_estado": d.get("hidrico_estado") or {},
+        "hidrico_alertas": d.get("hidrico_alertas") or [],
     }
     return Response(
         content=orjson.dumps(_sanitize_payload(payload), default=str, option=orjson.OPT_NON_STR_KEYS),
