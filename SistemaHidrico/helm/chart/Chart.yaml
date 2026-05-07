@@ -1,0 +1,13 @@
+---
+apiVersion: v2
+name: sistemahidrico
+version: 0.9.75
+appVersion: "0.9.75"
+description: SistemaHidrico Helm chart installation
+type: application
+
+dependencies:
+  - name: app-template
+    alias: sistemahidrico
+    version: ~4
+    repository: https://bjw-s-labs.github.io/helm-charts/

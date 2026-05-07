@@ -1,0 +1,18 @@
+NOTICE — Attribution Required by GNU AGPL v3
+=============================================
+
+This software, "SistemaHidrico", is a derivative work based on:
+
+  ShadowBroker — Global Threat Intercept / Real-Time Geospatial Intelligence Platform
+  Original author: BigBodyCobain (https://github.com/bigbodycobain)
+  Original repository: https://github.com/bigbodycobain/Shadowbroker
+  Original license: GNU Affero General Public License v3.0 (AGPL-3.0)
+
+Modifications by: Prof. César Rodríguez (https://github.com/cero97-ctrl)
+Fork repository: https://github.com/cero97-ctrl/SistemaHidricoCumana
+
+This derivative work is also licensed under the GNU Affero General Public
+License v3.0. See the LICENSE file for the full license text.
+
+Per AGPL-3.0 Section 5(a), prominent notices are provided here stating that
+this software has been modified from the original ShadowBroker project.
