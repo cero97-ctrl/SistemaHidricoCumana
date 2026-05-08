@@ -1405,10 +1405,10 @@ const MaplibreViewer = ({
     [activeLayers.sar, sarAoisList],
   );
 
-  // Sistema Hídrico — sensor data points
+  const turimiquireData = (data as any)?.turimiquire;
   const turimiquireGeoJSON = useMemo(
-    () => (activeLayers.turimiquire ? buildTurimiquireGeoJSON((data as any)?.turimiquire) : null),
-    [activeLayers.turimiquire, (data as any)?.turimiquire],
+    () => (activeLayers.turimiquire ? buildTurimiquireGeoJSON(turimiquireData) : null),
+    [activeLayers.turimiquire, turimiquireData],
   );
 
   // Load infrastructure GeoJSON once when the layer is enabled
