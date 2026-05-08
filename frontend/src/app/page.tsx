@@ -529,10 +529,10 @@ export default function Dashboard() {
                   className="text-2xl font-bold tracking-[0.4em] text-[var(--text-primary)] flex items-center gap-3 text-glow"
                   style={{ fontFamily: 'var(--font-roboto-mono), monospace' }}
                 >
-                  S H A D O W <span className="text-cyan-400">B R O K E R</span>
+                  S I S T E M A <span className="text-cyan-400">H Í D R I C O</span>
                 </h1>
                 <span className="text-[11px] text-[var(--text-muted)] font-mono tracking-[0.3em] mt-1 ml-1">
-                  GLOBAL THREAT INTERCEPT
+                  C U M A N Á
                 </span>
               </div>
             </motion.div>
