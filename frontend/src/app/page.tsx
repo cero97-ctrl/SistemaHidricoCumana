@@ -421,7 +421,7 @@ export default function Dashboard() {
       const idx = stylesList.indexOf(prev);
       const next = stylesList[(idx + 1) % stylesList.length];
       // Auto-toggle High-Res Satellite layer with SATELLITE style
-      setActiveLayers((l) => ({ ...l, highres_satellite: next === 'SATELLITE' }));
+      setActiveLayers((l: any) => ({ ...l, highres_satellite: next === 'SATELLITE' }));
       return next;
     });
   };
