@@ -97,13 +97,17 @@ cd SistemaHidricoCumana
 
 # 2. Backend
 cd backend
-# Se recomienda usar 'uv' para una instalación ultrarrápida:
-uv sync
-source .venv/bin/activate        # Linux/macOS
-# .venv\Scripts\activate         # Windows
 
-# (Alternativa clásica con pip)
+# Opción A: Usar Conda (Entorno 'hidro_env')
+conda activate hidro_env
+pip install -e .
+
+# Opción B: Usar 'uv' (Alternativa rápida si no usas Conda)
+# uv sync && source .venv/bin/activate
+
+# Opción C: Alternativa clásica con pip y venv
 # python -m venv venv && source venv/bin/activate && pip install -e .
+
 cp .env.example .env             # Editar si es necesario
 
 # 3. Frontend
@@ -125,8 +129,8 @@ Puedes levantar el Frontend y Backend de forma simultánea ejecutando el script 
 ```bash
 # Terminal 1: Backend
 cd backend
-source .venv/bin/activate
-uv run uvicorn main:app --reload --port 8000
+conda activate hidro_env
+uvicorn main:app --reload --port 8000
 ```
 
 ```bash

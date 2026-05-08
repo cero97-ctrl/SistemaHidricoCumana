@@ -105,8 +105,19 @@ if [ -f "$VENV_MARKER" ]; then
     PINNED_VENV_DIR="$(head -n 1 "$VENV_MARKER" | tr -d '\r')"
 fi
 
+# Check if Conda environment is active
+if [ -n "$CONDA_PREFIX" ] && [ "$CONDA_DEFAULT_ENV" != "base" ]; then
+    echo "[*] Conda environment detected: $CONDA_DEFAULT_ENV"
+    VENV_DIR=".venv-conda"
+    ln -sfn "$CONDA_PREFIX" "$VENV_DIR"
+    export BACKEND_VENV_DIR="$VENV_DIR"
+    VENV_PY="$VENV_DIR/bin/python"
+    
+    echo "[*] Installing Python dependencies in Conda (this may take a minute)..."
+    "$VENV_PY" -m pip install -q .
+
 # Check if UV is available (preferred, much faster installs)
-if command -v uv &> /dev/null; then
+elif command -v uv &> /dev/null; then
     echo "[*] Using UV for Python dependency management."
     PRIMARY_VENV_DIR="venv"
     if [ -n "$PINNED_VENV_DIR" ]; then
@@ -144,7 +155,7 @@ if command -v uv &> /dev/null; then
     fi
     echo "[*] Installing Python dependencies via UV (fast)..."
     cd "$SCRIPT_DIR"
-    UV_PROJECT_ENVIRONMENT="$SCRIPT_DIR/backend/$VENV_DIR" uv sync --frozen --no-dev
+    UV_PROJECT_ENVIRONMENT="$SCRIPT_DIR/backend/$VENV_DIR" uv sync --frozen --no-dev --package sistemahidrico-backend
     cd "$SCRIPT_DIR/backend"
 else
     echo "[*] UV not found, using pip (install UV for faster installs: https://docs.astral.sh/uv/)"
