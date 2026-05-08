@@ -2,7 +2,7 @@
   <h1 align="center">💧 S I S T E M A &nbsp; H Í D R I C O &nbsp; C U M A N Á</h1>
   <p align="center"><strong>Plataforma de Monitoreo del Sistema de Agua Potable — Cumaná, Estado Sucre, Venezuela</strong></p>
   <p align="center">
-    <em>Basado en <a href="https://github.com/BigBodyCobain/Shadowbroker">Shadowbroker</a> — Adaptado por Prof. César Rodríguez</em>
+    <em>Basado en <a href="https://github.com/BigBodyCobain/Shadowbroker">Shadowbroker</a> — Adaptado por Prof. César Rodríguez - Dpto. Física - UDO</em>
   </p>
 </p>
 
