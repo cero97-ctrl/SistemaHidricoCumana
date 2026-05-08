@@ -97,11 +97,14 @@ cd SistemaHidricoCumana
 
 # 2. Backend
 cd backend
-python -m venv venv
-source venv/bin/activate        # Linux/macOS
-# venv\Scripts\activate         # Windows
-pip install -r ../requirements.txt
-cp .env.example .env            # Editar si es necesario
+# Se recomienda usar 'uv' para una instalación ultrarrápida:
+uv sync
+source .venv/bin/activate        # Linux/macOS
+# .venv\Scripts\activate         # Windows
+
+# (Alternativa clásica con pip)
+# python -m venv venv && source venv/bin/activate && pip install -e .
+cp .env.example .env             # Editar si es necesario
 
 # 3. Frontend
 cd ../frontend
@@ -110,13 +113,20 @@ npm install
 
 #### Ejecución
 
-Necesitas 3 terminales:
+**Método automatizado (Recomendado):**
+Puedes levantar el Frontend y Backend de forma simultánea ejecutando el script en la raíz del proyecto:
+```bash
+./start.sh
+```
+*(Aún necesitarás abrir una terminal extra para ejecutar el simulador de sensores si deseas probar esa funcionalidad).*
+
+**Método manual (Necesitas 3 terminales separadas):**
 
 ```bash
 # Terminal 1: Backend
 cd backend
-source venv/bin/activate
-uvicorn main:app --reload --port 8000
+source .venv/bin/activate
+uv run uvicorn main:app --reload --port 8000
 ```
 
 ```bash
