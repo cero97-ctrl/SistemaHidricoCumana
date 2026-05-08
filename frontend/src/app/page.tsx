@@ -627,7 +627,7 @@ export default function Dashboard() {
                     onResultsChange={(results, queryLabel) => {
                       setShodanResults(results);
                       setShodanQueryLabel(queryLabel);
-                      setActiveLayers((prev) => ({ ...prev, shodan_overlay: results.length > 0 }));
+                      setActiveLayers((prev: any) => ({ ...prev, shodan_overlay: results.length > 0 }));
                     }}
                     onSelectEntity={setSelectedEntity}
                     onStyleChange={setShodanStyle}
@@ -836,10 +836,10 @@ export default function Dashboard() {
                         </div>
                         <div
                           className={`text-[14px] font-mono font-bold ${(sw?.kp_index ?? 0) >= 5
-                              ? 'text-red-400'
-                              : (sw?.kp_index ?? 0) >= 4
-                                ? 'text-yellow-400'
-                                : 'text-green-400'
+                            ? 'text-red-400'
+                            : (sw?.kp_index ?? 0) >= 4
+                              ? 'text-yellow-400'
+                              : 'text-green-400'
                             }`}
                         >
                           {sw?.kp_text || 'N/A'}
