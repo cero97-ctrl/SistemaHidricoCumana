@@ -152,7 +152,7 @@ export default function Dashboard() {
     setInfonetOpen(prev => !prev);
   }, []);
 
-  const [activeLayers, setActiveLayers] = useState<ActiveLayers | any>({
+  const [activeLayers, setActiveLayers] = useState<ActiveLayers>({
     // Aircraft — all ON
     flights: true,
     private: true,
@@ -627,7 +627,7 @@ export default function Dashboard() {
                     onResultsChange={(results, queryLabel) => {
                       setShodanResults(results);
                       setShodanQueryLabel(queryLabel);
-                      setActiveLayers((prev: any) => ({ ...prev, shodan_overlay: results.length > 0 }));
+                      setActiveLayers((prev) => ({ ...prev, shodan_overlay: results.length > 0 }));
                     }}
                     onSelectEntity={setSelectedEntity}
                     onStyleChange={setShodanStyle}

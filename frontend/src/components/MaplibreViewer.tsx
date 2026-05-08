@@ -280,7 +280,7 @@ function flightHasKnownRoute(entity: ReturnType<typeof findSelectedEntity>, dyna
   const flight = entity as Flight;
   return Boolean(
     (flight.origin_loc && flight.dest_loc)
-      || (hasKnownRouteName(flight.origin_name) && hasKnownRouteName(flight.dest_name)),
+    || (hasKnownRouteName(flight.origin_name) && hasKnownRouteName(flight.dest_name)),
   );
 }
 
@@ -790,7 +790,7 @@ const MaplibreViewer = ({
           lng: f.geometry?.coordinates?.[0],
         }));
         if (!cancelled) setAiIntelPins(pins);
-      } catch {}
+      } catch { }
     };
     poll();
     const tid = setInterval(poll, 15_000); // poll every 15s
@@ -2916,77 +2916,77 @@ const MaplibreViewer = ({
 
         {/* Power Plant positions */}
         {powerPlantsGeoJSON && (
-            <Source id="power-plants" type="geojson" data={EMPTY_FC} cluster={true} clusterRadius={30} clusterMaxZoom={8}>
-                {/* Cluster circles */}
-                <Layer
-                    id="power-plants-clusters"
-                    type="circle"
-                    minzoom={4}
-                    filter={['has', 'point_count']}
-                    paint={{
-                        'circle-color': '#92400e',
-                        'circle-radius': ['step', ['get', 'point_count'], 12, 10, 16, 50, 20],
-                        'circle-opacity': 0.7,
-                        'circle-stroke-width': 1,
-                        'circle-stroke-color': '#f59e0b',
-                    }}
-                />
-                <Layer
-                    id="power-plants-cluster-count"
-                    type="symbol"
-                    minzoom={4}
-                    filter={['has', 'point_count']}
-                    layout={{
-                        'text-field': '{point_count_abbreviated}',
-                        'text-font': ['Noto Sans Bold'],
-                        'text-size': 10,
-                        'text-allow-overlap': true,
-                    }}
-                    paint={{
-                        'text-color': '#fde68a',
-                    }}
-                />
-                {/* Individual power plant icons */}
-                <Layer
-                    id="power-plants-layer"
-                    type="symbol"
-                    minzoom={4}
-                    filter={['!', ['has', 'point_count']]}
-                    layout={{
-                        'icon-image': 'power-plant',
-                        'icon-size': ['interpolate', ['linear'], ['zoom'], 2, 0.5, 6, 0.7, 10, 1.0],
-                        'icon-allow-overlap': true,
-                        'text-field': ['step', ['zoom'], '', 6, ['get', 'name']],
-                        'text-font': ['Noto Sans Regular'],
-                        'text-size': 9,
-                        'text-offset': [0, 1.2],
-                        'text-anchor': 'top',
-                        'text-allow-overlap': false,
-                    }}
-                    paint={{
-                        'text-color': '#fbbf24',
-                        'text-halo-color': 'rgba(0,0,0,0.9)',
-                        'text-halo-width': 1,
-                    }}
-                />
-            </Source>
+          <Source id="power-plants" type="geojson" data={EMPTY_FC} cluster={true} clusterRadius={30} clusterMaxZoom={8}>
+            {/* Cluster circles */}
+            <Layer
+              id="power-plants-clusters"
+              type="circle"
+              minzoom={4}
+              filter={['has', 'point_count']}
+              paint={{
+                'circle-color': '#92400e',
+                'circle-radius': ['step', ['get', 'point_count'], 12, 10, 16, 50, 20],
+                'circle-opacity': 0.7,
+                'circle-stroke-width': 1,
+                'circle-stroke-color': '#f59e0b',
+              }}
+            />
+            <Layer
+              id="power-plants-cluster-count"
+              type="symbol"
+              minzoom={4}
+              filter={['has', 'point_count']}
+              layout={{
+                'text-field': '{point_count_abbreviated}',
+                'text-font': ['Noto Sans Bold'],
+                'text-size': 10,
+                'text-allow-overlap': true,
+              }}
+              paint={{
+                'text-color': '#fde68a',
+              }}
+            />
+            {/* Individual power plant icons */}
+            <Layer
+              id="power-plants-layer"
+              type="symbol"
+              minzoom={4}
+              filter={['!', ['has', 'point_count']]}
+              layout={{
+                'icon-image': 'power-plant',
+                'icon-size': ['interpolate', ['linear'], ['zoom'], 2, 0.5, 6, 0.7, 10, 1.0],
+                'icon-allow-overlap': true,
+                'text-field': ['step', ['zoom'], '', 6, ['get', 'name']],
+                'text-font': ['Noto Sans Regular'],
+                'text-size': 9,
+                'text-offset': [0, 1.2],
+                'text-anchor': 'top',
+                'text-allow-overlap': false,
+              }}
+              paint={{
+                'text-color': '#fbbf24',
+                'text-halo-color': 'rgba(0,0,0,0.9)',
+                'text-halo-width': 1,
+              }}
+            />
+          </Source>
         )}
 
         {/* VIIRS Change Detection Nodes */}
         {viirsChangeNodesGeoJSON && (
-            <Source id="viirs-change-nodes" type="geojson" data={EMPTY_FC}>
-                <Layer
-                    id="viirs-change-nodes-layer"
-                    type="circle"
-                    paint={{
-                        'circle-radius': ['interpolate', ['linear'], ['zoom'], 2, 4, 6, 8, 10, 12],
-                        'circle-color': ['get', 'color'],
-                        'circle-opacity': 0.85,
-                        'circle-stroke-width': 1,
-                        'circle-stroke-color': 'rgba(255,255,255,0.4)',
-                    }}
-                />
-            </Source>
+          <Source id="viirs-change-nodes" type="geojson" data={EMPTY_FC}>
+            <Layer
+              id="viirs-change-nodes-layer"
+              type="circle"
+              paint={{
+                'circle-radius': ['interpolate', ['linear'], ['zoom'], 2, 4, 6, 8, 10, 12],
+                'circle-color': ['get', 'color'],
+                'circle-opacity': 0.85,
+                'circle-stroke-width': 1,
+                'circle-stroke-color': 'rgba(255,255,255,0.4)',
+              }}
+            />
+          </Source>
         )}
 
         {/* SAR AOIs — operator watchbox circles, drawn beneath anomaly pins */}
@@ -4661,7 +4661,7 @@ const MaplibreViewer = ({
               >
                 <div className="map-popup border border-orange-500/30">
                   <div className="flex justify-between items-start mb-0.5">
-                  <div className={`map-popup-title ${isAmtrak ? 'text-[#ff8800]' : 'text-[#00aaff]'}`}>
+                    <div className={`map-popup-title ${isAmtrak ? 'text-[#ff8800]' : 'text-[#00aaff]'}`}>
                       {train.name}
                     </div>
                     <button onClick={() => onEntityClick?.(null)}
@@ -5187,8 +5187,8 @@ const MaplibreViewer = ({
             const solver = String(a.solver || extra.solver || '');
             const constellation = String(
               (a as { source_constellation?: string }).source_constellation ||
-                extra.source_constellation ||
-                '',
+              extra.source_constellation ||
+              '',
             );
             const magnitude = Number(a.magnitude ?? extra.magnitude ?? 0);
             const unit = String(a.magnitude_unit || extra.magnitude_unit || '');
@@ -5414,88 +5414,88 @@ const MaplibreViewer = ({
 
         {/* Power Plant click popup */}
         {selectedEntity?.type === 'power_plant' && (() => {
-            const pp = data?.power_plants?.find((_: any, i: number) => `pp-${i}` === selectedEntity.id);
-            if (!pp) return null;
-            return (
-                <Popup
-                    longitude={pp.lng}
-                    latitude={pp.lat}
-                    closeButton={false}
-                    closeOnClick={false}
-                    onClose={() => onEntityClick?.(null)}
-                    className="threat-popup"
-                    maxWidth="280px"
-                >
-                    <div className="map-popup bg-[#1a0f00] border border-amber-400/40 text-[#fde68a] min-w-[200px]">
-                        <div className="map-popup-title text-amber-400 border-b border-amber-400/20 pb-1">
-                            {pp.name}
-                        </div>
-                        {pp.fuel_type && (
-                            <div className="map-popup-row">
-                                Fuel: <span className="text-[#fbbf24]">{pp.fuel_type}</span>
-                            </div>
-                        )}
-                        {pp.capacity_mw != null && (
-                            <div className="map-popup-row">
-                                Capacity: <span className="text-white">{pp.capacity_mw.toLocaleString()} MW</span>
-                            </div>
-                        )}
-                        {pp.owner && (
-                            <div className="map-popup-row">
-                                Operator: <span className="text-white">{pp.owner}</span>
-                            </div>
-                        )}
-                        {pp.country && (
-                            <div className="map-popup-row">
-                                Country: <span className="text-white">{pp.country}</span>
-                            </div>
-                        )}
-                        <div className="mt-1.5 text-[9px] text-amber-600 tracking-wider">
-                            POWER PLANT
-                        </div>
-                    </div>
-                </Popup>
-            );
+          const pp = data?.power_plants?.find((_: any, i: number) => `pp-${i}` === selectedEntity.id);
+          if (!pp) return null;
+          return (
+            <Popup
+              longitude={pp.lng}
+              latitude={pp.lat}
+              closeButton={false}
+              closeOnClick={false}
+              onClose={() => onEntityClick?.(null)}
+              className="threat-popup"
+              maxWidth="280px"
+            >
+              <div className="map-popup bg-[#1a0f00] border border-amber-400/40 text-[#fde68a] min-w-[200px]">
+                <div className="map-popup-title text-amber-400 border-b border-amber-400/20 pb-1">
+                  {pp.name}
+                </div>
+                {pp.fuel_type && (
+                  <div className="map-popup-row">
+                    Fuel: <span className="text-[#fbbf24]">{pp.fuel_type}</span>
+                  </div>
+                )}
+                {pp.capacity_mw != null && (
+                  <div className="map-popup-row">
+                    Capacity: <span className="text-white">{pp.capacity_mw.toLocaleString()} MW</span>
+                  </div>
+                )}
+                {pp.owner && (
+                  <div className="map-popup-row">
+                    Operator: <span className="text-white">{pp.owner}</span>
+                  </div>
+                )}
+                {pp.country && (
+                  <div className="map-popup-row">
+                    Country: <span className="text-white">{pp.country}</span>
+                  </div>
+                )}
+                <div className="mt-1.5 text-[9px] text-amber-600 tracking-wider">
+                  POWER PLANT
+                </div>
+              </div>
+            </Popup>
+          );
         })()}
 
         {/* VIIRS Change Node click popup */}
         {selectedEntity?.type === 'viirs_change_node' && (() => {
-            const node = data?.viirs_change_nodes?.find(
-                (_: any, i: number) => `viirs-${i}` === selectedEntity.id
-            );
-            if (!node) return null;
-            const isLoss = node.mean_change_pct < 0;
-            return (
-                <Popup
-                    longitude={node.lng}
-                    latitude={node.lat}
-                    closeButton={false}
-                    closeOnClick={false}
-                    onClose={() => onEntityClick?.(null)}
-                    className="threat-popup"
-                    maxWidth="280px"
-                >
-                    <div className="map-popup bg-black/90 border border-cyan-500/30 text-white min-w-[200px]">
-                        <div className="map-popup-title text-cyan-400 border-b border-cyan-500/20 pb-1 tracking-wider">
-                            VIIRS NIGHT LIGHTS
-                        </div>
-                        <div className="map-popup-row">
-                            Region: <span className="text-white">{node.aoi_name}</span>
-                        </div>
-                        <div className="map-popup-row">
-                            Change: <span className={`text-lg font-bold ${isLoss ? 'text-red-400' : 'text-green-400'}`}>
-                                {isLoss ? '' : '+'}{node.mean_change_pct.toFixed(1)}%
-                            </span>
-                        </div>
-                        <div className="map-popup-row">
-                            Severity: <span className="text-white uppercase">{node.severity.replace('_', ' ')}</span>
-                        </div>
-                        <div className="mt-1.5 text-[9px] text-cyan-600 tracking-wider">
-                            {isLoss ? 'LIGHTS WENT DARK' : 'LIGHTS INCREASED'}
-                        </div>
-                    </div>
-                </Popup>
-            );
+          const node = data?.viirs_change_nodes?.find(
+            (_: any, i: number) => `viirs-${i}` === selectedEntity.id
+          );
+          if (!node) return null;
+          const isLoss = node.mean_change_pct < 0;
+          return (
+            <Popup
+              longitude={node.lng}
+              latitude={node.lat}
+              closeButton={false}
+              closeOnClick={false}
+              onClose={() => onEntityClick?.(null)}
+              className="threat-popup"
+              maxWidth="280px"
+            >
+              <div className="map-popup bg-black/90 border border-cyan-500/30 text-white min-w-[200px]">
+                <div className="map-popup-title text-cyan-400 border-b border-cyan-500/20 pb-1 tracking-wider">
+                  VIIRS NIGHT LIGHTS
+                </div>
+                <div className="map-popup-row">
+                  Region: <span className="text-white">{node.aoi_name}</span>
+                </div>
+                <div className="map-popup-row">
+                  Change: <span className={`text-lg font-bold ${isLoss ? 'text-red-400' : 'text-green-400'}`}>
+                    {isLoss ? '' : '+'}{node.mean_change_pct.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="map-popup-row">
+                  Severity: <span className="text-white uppercase">{node.severity.replace('_', ' ')}</span>
+                </div>
+                <div className="mt-1.5 text-[9px] text-cyan-600 tracking-wider">
+                  {isLoss ? 'LIGHTS WENT DARK' : 'LIGHTS INCREASED'}
+                </div>
+              </div>
+            </Popup>
+          );
         })()}
 
         {selectedEntity?.type === 'military_base' &&
