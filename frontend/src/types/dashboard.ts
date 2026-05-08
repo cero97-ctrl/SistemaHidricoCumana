@@ -1030,6 +1030,7 @@ export interface ActiveLayers {
   ai_intel: boolean;
   crowdthreat: boolean;
   sar: boolean;
+  turimiquire: boolean;
 }
 
 export interface SelectedEntity {

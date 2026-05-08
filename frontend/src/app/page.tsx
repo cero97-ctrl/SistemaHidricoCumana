@@ -152,7 +152,7 @@ export default function Dashboard() {
     setInfonetOpen(prev => !prev);
   }, []);
 
-  const [activeLayers, setActiveLayers] = useState<ActiveLayers | any>({
+  const [activeLayers, setActiveLayers] = useState<ActiveLayers>({
     // Aircraft — all ON
     flights: true,
     private: true,
@@ -421,7 +421,7 @@ export default function Dashboard() {
       const idx = stylesList.indexOf(prev);
       const next = stylesList[(idx + 1) % stylesList.length];
       // Auto-toggle High-Res Satellite layer with SATELLITE style
-      setActiveLayers((l) => ({ ...l, highres_satellite: next === 'SATELLITE' }));
+      setActiveLayers((l: any) => ({ ...l, highres_satellite: next === 'SATELLITE' }));
       return next;
     });
   };
@@ -836,10 +836,10 @@ export default function Dashboard() {
                         </div>
                         <div
                           className={`text-[14px] font-mono font-bold ${(sw?.kp_index ?? 0) >= 5
-                              ? 'text-red-400'
-                              : (sw?.kp_index ?? 0) >= 4
-                                ? 'text-yellow-400'
-                                : 'text-green-400'
+                            ? 'text-red-400'
+                            : (sw?.kp_index ?? 0) >= 4
+                              ? 'text-yellow-400'
+                              : 'text-green-400'
                             }`}
                         >
                           {sw?.kp_text || 'N/A'}

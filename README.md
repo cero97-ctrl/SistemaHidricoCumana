@@ -10,7 +10,7 @@
 
 ## ¿Qué es?
 
-**SistemaHidricoCumana** es una plataforma de monitoreo en tiempo real del sistema de distribución de agua potable de la ciudad de **Cumaná**, Venezuela. Permite visualizar en un mapa interactivo la infraestructura hídrica —desde el **Embalse Turimiquire** hasta la red de distribución urbana—, recibir datos de sensores IoT (reales o simulados), generar alertas automáticas y consultar datos climáticos de la zona.
+**SistemaHidricoCumana** es una plataforma de monitoreo en tiempo real del sistema de distribución de aguas potable de la ciudad de **Cumaná**, Venezuela. Permite visualizar en un mapa interactivo la infraestructura hídrica —desde el **Embalse Turimiquire** hasta la red de distribución urbana—, recibir datos de sensores IoT (reales o simulados), generar alertas automáticas y consultar datos climáticos de la zona.
 
 El proyecto es un fork de [Shadowbroker](https://github.com/BigBodyCobain/Shadowbroker), una plataforma de inteligencia de fuentes abiertas. Se reutiliza su infraestructura de mapas (MapLibre GL), backend (FastAPI) y sistema de capas de datos para crear una herramienta especializada en la gestión hídrica local.
 
