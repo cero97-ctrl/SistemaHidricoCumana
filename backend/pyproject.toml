@@ -28,7 +28,7 @@ dependencies = [
     "PySocks==1.7.1",
     "reverse-geocoder==1.5.1",
     "sgp4==2.25",
-    "meshtastic>=2.5.0",
+    "meshtastic>=2.7.8",
     "orjson>=3.10.0",
     "paho-mqtt>=1.6.0,<2.0.0",
     "PyNaCl>=1.5.0",
